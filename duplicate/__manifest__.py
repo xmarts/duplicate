@@ -2,12 +2,10 @@
 {
     'name': "duplicate_report",
 
-    'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+    'summary': """This module duplicates a budget / order report""",
 
     'description': """
-        Long description of module's purpose
+        This module duplicates a budget / order report
     """,
 
     'author': "Xmarts",
@@ -16,7 +14,7 @@
     # Categories can be used to filter modules in modules listing
     # Check https://githb.com/odoo/odoo/blob/11.0/odoo/addons/base/module/module_data.xml
     # for the full list
-    'category': 'Reports',
+    'category': 'Sales',
     'version': '0.1',
 
     # any module necessary for this one to work correctly
