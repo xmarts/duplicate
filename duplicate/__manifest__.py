@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "duplicate",
+    'name': "duplicate_report",
 
     'summary': """
         Short (1 phrase/line) summary of the module's purpose, used as
@@ -10,13 +10,13 @@
         Long description of module's purpose
     """,
 
-    'author': "My Company",
-    'website': "http://www.yourcompany.com",
+    'author': "Xmarts",
+    'website': "https://www.xmarts.com/",
 
     # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/11.0/odoo/addons/base/module/module_data.xml
+    # Check https://githb.com/odoo/odoo/blob/11.0/odoo/addons/base/module/module_data.xml
     # for the full list
-    'category': 'Uncategorized',
+    'category': 'Reports',
     'version': '0.1',
 
     # any module necessary for this one to work correctly
