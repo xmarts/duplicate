@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report
+            string="Recibo de venta"
+            id="action_report_ticket_recibo"
+            model="sale.order"
+            report_type="qweb-pdf"
+            name="duplicate.report_recibo_ticket"
+            file="duplicate.report_recibo_ticket"
+            paperformat="duplicate.paperformat_recibo_ticket"
+
+            
+        />
+        <!-- 
+
+        <report
+            string="Recibo de venta"
+            id="action_report_ticket_recibo"
+            model="pos.order"
+            report_type="qweb-pdf"
+            name="recibo_ticket.report_recibo_ticket"
+            file="recibo_ticket.report_recibo_ticket"
+            paperformat="recibo_ticket.paperformat_recibo_ticket"
+        /> -->
+    </data>
+</odoo>
