@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from . import amount_to_text
 
-# class duplicate(models.Model):
-#     _name = 'duplicate.duplicate'
+class amount_to_texts(models.Model):
+    _inherit='sale.order'
+    
 
-#     name = fields.Char()
-#     value = fields.Integer()
-#     value2 = fields.Float(compute="_value_pc", store=True)
-#     description = fields.Text()
-#
-#     @api.depends('value')
-#     def _value_pc(self):
-#         self.value2 = float(self.value) / 100
+
+    amount_to_text = fields.Char(compute='_get_amount_to_text', string='Monto en Texto', readonly=True,
+                                 help='Amount of the invoice in letter')
+    @api.one
+    @api.depends('amount_total')
+    def _get_amount_to_text(self):
+        self.amount_to_text = amount_to_text.get_amount_to_text(self, self.amount_total)
