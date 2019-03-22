@@ -6,9 +6,9 @@
             id="action_report_ticket_recibo"
             model="sale.order"
             report_type="qweb-pdf"
-            name="duplicate.report_recibo_ticket"
-            file="duplicate.report_recibo_ticket"
-            paperformat="duplicate.paperformat_recibo_ticket"
+            name="duplicate_report.report_recibo_ticket"
+            file="duplicate_report.report_recibo_ticket"
+            paperformat="duplicate_report.paperformat_recibo_ticket"
 
             
         />
