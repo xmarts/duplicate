@@ -9,12 +9,12 @@
                         <t t-foreach="doc.company_id" t-as="com">
                             <t t-foreach="com.state_id" t-as="st">
                                 <t t-foreach="com.country_id" t-as="cont">
-                                    <t t-call="web.report_layout">
+                                    <!-- <t t-call="web.report_layout">
                                         <t t-set="address" style="font-size: 12px;">
                                             <div t-field="doc.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}"/>
                                             <p t-if="doc.partner_id.vat"><t t-esc="doc.company_id.country_id.vat_label or 'Tax ID'"/>: <span t-field="doc.partner_id.vat"/></p>
                                         </t>
-                                        <hr/>
+                                        <hr/> -->
                                  
                                         <div class="page" style="font-size: 11px;">
                                             <div class="oe_structure"/>
@@ -40,14 +40,14 @@
                                             <br/>
                                             <div style="text-align: center; width: 100%; font-size: 12px;">
                                                              <span>FECHA DE EXPEDICION: </span><br/>
-                                                             <t t-esc="doc.confirmation_date"/><br/>
+                                                             <t t-esc="doc.validity_date"/><br/>
                                             </div>
                                             <br/>
                                             <div style="text-align: center; width: 100%; font-size: 12px;">
                                                             <span>**NOTA DE VENTA: </span><t t-esc="doc.name"/><br/>
-                                                            <span>**PEDIDO TMK: </span><br/>
+                                                            <!-- <span>**PEDIDO TMK: </span><br/> -->
                                                             <span>CAJERO: </span><t t-esc="urs.name"/><br/>
-                                                             <span>FECHA: </span><t t-esc="doc.confirmation_date"/><br/>
+                                                             <span>FECHA: </span><t t-esc="doc.validity_date"/><br/>
 
 
 
@@ -58,8 +58,9 @@
                                            <!-- Is there a discount on at least one line? -->
                                             <t t-set="display_discount" t-value="any([l.discount for l in doc.order_line])"/>
 
+                                             <t t-set="titems" t-value="0" />
                                             <t t-foreach="doc.order_lines_layouted()" t-as="page">
-                                                <table class="table table-condensed">
+                                                <table class="table receipt-orderlines">
                                                     <thead>
                                                         <tr>
                                                             <th>Cantidad</th>
@@ -69,6 +70,7 @@
                                                             <th class="text-right" groups="sale.group_show_price_subtotal">Importe</th>
                                                             <th class="text-right price_tax_included" groups="sale.group_show_price_total">Precio total</th>
                                                         </tr>
+
                                                    </thead>
                                                    <tbody class="sale_tbody">
                                                         <t t-foreach="page" t-as="layout_category">
@@ -97,6 +99,7 @@
                                                                     <td class="text-right" groups="sale.group_show_price_total">
                                                                         <span t-field="l.price_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
                                                                     </td>
+                                                                  
                                                                 </tr>
                                                             </t>
 
@@ -108,8 +111,16 @@
                                                                         <span t-esc="subtotal" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>
                                                                     </td>
                                                                 </tr>
+                                                             
+                                                              
                                                             </t>
-
+                                                              <tr class="text-right">
+                                                                 <td colspan="6">
+                                                                        <strong>Articulos: </strong>
+                                                                        <t t-set="items" t-value="sum(line.product_uom_qty for line in layout_category['lines'])"/>
+                                                                        <span t-esc="items" />
+                                                                    </td>
+                                                                </tr>
                                                         </t>
                                                     </tbody>
                                                 </table>
@@ -117,50 +128,52 @@
                                                 <t t-if="page_index &lt; page_size - 1" groups="sale.group_sale_layout">
                                                     <p style="page-break-before:always;"> </p>
                                                 </t>
+
                                             </t>
+                                            <br/>
+                                            
 
                                             <div class="clearfix">
-                                                <div class="row" name="total">
-                                                    <div class="col-xs-4 pull-right">
-                                                        <table class="table table-condensed" style="min-width: 200px;max-width: 350px;">
-                                                            <tr class="border-black" style="border-bottom:1px solid #dddddd;">
-                                                                <td><strong>Subtotal</strong></td>
-                                                                <td class="text-right">
-                                                                    <span t-field="doc.amount_untaxed" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
-                                                                </td>
-                                                            </tr>
-                                                            <t t-foreach="doc._get_tax_amount_by_group()" t-as="amount_by_group">
-                                                                <tr style="border-bottom:1px solid #dddddd;">
-                                                                    <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
-                                                                        <td>
-                                                                            <span t-esc="amount_by_group[0]"/>
-                                                                            <span>&amp;nbsp;<span>en</span>&amp;nbsp;<t t-esc="amount_by_group[2]" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/></span>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <span t-esc="amount_by_group[1]" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
-                                                                        </td>
-                                                                    </t>
-                                                                    <t t-else="">
-                                                                        <td>
-                                                                            <span t-esc="amount_by_group[0]"/>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <span t-esc="amount_by_group[1]" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
-                                                                        </td>
-                                                                    </t>
-                                                                </tr>
-                                                            </t>
-                                                            <tr class="border-black">
-                                                                <td><strong>Total</strong></td>
-                                                                <td class="text-right">
-                                                                    <span t-field="doc.amount_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
-                                                                </td>
-                                                                 
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                              <div class="row" name="total">
+                                                  <div class="col-xs-4 pull-right">
+                                                      <table class="table table-condensed" style="min-width: 200px;max-width: 350px;">
+                                                          <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                                              <td><strong>Subtotal</strong></td>
+                                                              <td class="text-right">
+                                                                  <span t-field="doc.amount_untaxed" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
+                                                              </td>
+                                                          </tr>
+                                                          <t t-foreach="doc._get_tax_amount_by_group()" t-as="amount_by_group">
+                                                              <tr style="border-bottom:1px solid #dddddd;">
+                                                                  <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
+                                                                      <td>
+                                                                          <span t-esc="amount_by_group[0]"/>
+                                                                          <span>&amp;nbsp;<span>en</span>&amp;nbsp;<t t-esc="amount_by_group[2]" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/></span>
+                                                                      </td>
+                                                                      <td class="text-right">
+                                                                          <span t-esc="amount_by_group[1]" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
+                                                                      </td>
+                                                                  </t>
+                                                                  <t t-else="">
+                                                                      <td>
+                                                                          <span t-esc="amount_by_group[0]"/>
+                                                                      </td>
+                                                                      <td class="text-right">
+                                                                          <span t-esc="amount_by_group[1]" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
+                                                                      </td>
+                                                                  </t>
+                                                              </tr>
+                                                          </t>
+                                                          <tr class="border-black">
+                                                              <td><strong>Total</strong></td>
+                                                              <td class="text-right">
+                                                                  <span t-field="doc.amount_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
+                                                              </td>
+                                                          </tr>
+                                                      </table>
+                                                  </div>
+                                              </div>
+                                          </div>
                                            
                                         
                                             <div class="text-center" style="font-size: 12px;">
@@ -172,10 +185,15 @@
                                                     <strong>Posición Fiscal:</strong>
                                                     <span t-field="doc.fiscal_position_id.note"/>
                                                 </p>
+                                                <span>Para cambios es necesario su ticket de
+                                                        compra y empaque original. Recuerde que
+                                                        tiene 30 dias para cambiar su mercancia 
+                                                        Articulos de oferta no se aceptan
+                                                        cambios.</span>
                                                 <br/>
                                             <span>Esta nota de venta sera incluida en la Factura Global </span>
                                             
-                                           
+                                         
                                            
                                             </div>
                                             <br/>
@@ -187,7 +205,8 @@
 
                                             
                                         </div>
-                                        <p style="page-break-before:always;"> </p>
+
+                                        <p style = "page-break-after: always;"> </p> 
 
                                         <div class="page" style="font-size: 11px;">
                                             <div class="oe_structure"/>
@@ -213,14 +232,14 @@
                                             <br/>
                                             <div style="text-align: center; width: 100%; font-size: 12px;">
                                                              <span>FECHA DE EXPEDICION: </span><br/>
-                                                             <t t-esc="doc.confirmation_date"/><br/>
+                                                             <t t-esc="doc.validity_date"/><br/>
                                             </div>
                                             <br/>
                                             <div style="text-align: center; width: 100%; font-size: 12px;">
                                                             <span>**NOTA DE VENTA: </span><t t-esc="doc.name"/><br/>
-                                                            <span>**PEDIDO TMK: </span><br/>
+                                                            <!-- <span>**PEDIDO TMK: </span><br/> -->
                                                             <span>CAJERO: </span><t t-esc="urs.name"/><br/>
-                                                             <span>FECHA: </span><t t-esc="doc.confirmation_date"/><br/>
+                                                             <span>FECHA: </span><t t-esc="doc.validity_date"/><br/>
 
 
 
@@ -231,8 +250,9 @@
                                            <!-- Is there a discount on at least one line? -->
                                             <t t-set="display_discount" t-value="any([l.discount for l in doc.order_line])"/>
 
+                                             <t t-set="titems" t-value="0" />
                                             <t t-foreach="doc.order_lines_layouted()" t-as="page">
-                                                <table class="table table-condensed">
+                                                <table class="table receipt-orderlines">
                                                     <thead>
                                                         <tr>
                                                             <th>Cantidad</th>
@@ -242,6 +262,7 @@
                                                             <th class="text-right" groups="sale.group_show_price_subtotal">Importe</th>
                                                             <th class="text-right price_tax_included" groups="sale.group_show_price_total">Precio total</th>
                                                         </tr>
+
                                                    </thead>
                                                    <tbody class="sale_tbody">
                                                         <t t-foreach="page" t-as="layout_category">
@@ -270,6 +291,7 @@
                                                                     <td class="text-right" groups="sale.group_show_price_total">
                                                                         <span t-field="l.price_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
                                                                     </td>
+                                                                  
                                                                 </tr>
                                                             </t>
 
@@ -281,8 +303,16 @@
                                                                         <span t-esc="subtotal" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>
                                                                     </td>
                                                                 </tr>
+                                                             
+                                                              
                                                             </t>
-
+                                                              <tr class="text-right">
+                                                                 <td colspan="6">
+                                                                        <strong>Articulos: </strong>
+                                                                        <t t-set="items" t-value="sum(line.product_uom_qty for line in layout_category['lines'])"/>
+                                                                        <span t-esc="items" />
+                                                                    </td>
+                                                                </tr>
                                                         </t>
                                                     </tbody>
                                                 </table>
@@ -290,50 +320,52 @@
                                                 <t t-if="page_index &lt; page_size - 1" groups="sale.group_sale_layout">
                                                     <p style="page-break-before:always;"> </p>
                                                 </t>
+
                                             </t>
+                                            <br/>
+                                            
 
                                             <div class="clearfix">
-                                                <div class="row" name="total">
-                                                    <div class="col-xs-4 pull-right">
-                                                        <table class="table table-condensed" style="min-width: 200px;max-width: 350px;">
-                                                            <tr class="border-black" style="border-bottom:1px solid #dddddd;">
-                                                                <td><strong>Subtotal</strong></td>
-                                                                <td class="text-right">
-                                                                    <span t-field="doc.amount_untaxed" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
-                                                                </td>
-                                                            </tr>
-                                                            <t t-foreach="doc._get_tax_amount_by_group()" t-as="amount_by_group">
-                                                                <tr style="border-bottom:1px solid #dddddd;">
-                                                                    <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
-                                                                        <td>
-                                                                            <span t-esc="amount_by_group[0]"/>
-                                                                            <span>&amp;nbsp;<span>en</span>&amp;nbsp;<t t-esc="amount_by_group[2]" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/></span>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <span t-esc="amount_by_group[1]" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
-                                                                        </td>
-                                                                    </t>
-                                                                    <t t-else="">
-                                                                        <td>
-                                                                            <span t-esc="amount_by_group[0]"/>
-                                                                        </td>
-                                                                        <td class="text-right">
-                                                                            <span t-esc="amount_by_group[1]" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
-                                                                        </td>
-                                                                    </t>
-                                                                </tr>
-                                                            </t>
-                                                            <tr class="border-black">
-                                                                <td><strong>Total</strong></td>
-                                                                <td class="text-right">
-                                                                    <span t-field="doc.amount_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
-                                                                </td>
-                                                                 
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                              <div class="row" name="total">
+                                                  <div class="col-xs-4 pull-right">
+                                                      <table class="table table-condensed" style="min-width: 200px;max-width: 350px;">
+                                                          <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                                              <td><strong>Subtotal</strong></td>
+                                                              <td class="text-right">
+                                                                  <span t-field="doc.amount_untaxed" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
+                                                              </td>
+                                                          </tr>
+                                                          <t t-foreach="doc._get_tax_amount_by_group()" t-as="amount_by_group">
+                                                              <tr style="border-bottom:1px solid #dddddd;">
+                                                                  <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
+                                                                      <td>
+                                                                          <span t-esc="amount_by_group[0]"/>
+                                                                          <span>&amp;nbsp;<span>en</span>&amp;nbsp;<t t-esc="amount_by_group[2]" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/></span>
+                                                                      </td>
+                                                                      <td class="text-right">
+                                                                          <span t-esc="amount_by_group[1]" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
+                                                                      </td>
+                                                                  </t>
+                                                                  <t t-else="">
+                                                                      <td>
+                                                                          <span t-esc="amount_by_group[0]"/>
+                                                                      </td>
+                                                                      <td class="text-right">
+                                                                          <span t-esc="amount_by_group[1]" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
+                                                                      </td>
+                                                                  </t>
+                                                              </tr>
+                                                          </t>
+                                                          <tr class="border-black">
+                                                              <td><strong>Total</strong></td>
+                                                              <td class="text-right">
+                                                                  <span t-field="doc.amount_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
+                                                              </td>
+                                                          </tr>
+                                                      </table>
+                                                  </div>
+                                              </div>
+                                          </div>
                                            
                                         
                                             <div class="text-center" style="font-size: 12px;">
@@ -345,10 +377,15 @@
                                                     <strong>Posición Fiscal:</strong>
                                                     <span t-field="doc.fiscal_position_id.note"/>
                                                 </p>
+                                                <span>Para cambios es necesario su ticket de
+                                                        compra y empaque original. Recuerde que
+                                                        tiene 30 dias para cambiar su mercancia 
+                                                        Articulos de oferta no se aceptan
+                                                        cambios.</span>
                                                 <br/>
                                             <span>Esta nota de venta sera incluida en la Factura Global </span>
                                             
-                                           
+                                         
                                            
                                             </div>
                                             <br/>
@@ -360,7 +397,8 @@
 
                                             
                                         </div>
-                                    </t>
+                                      
+                                    <!-- </t> -->
                                 </t>
                             </t>
                         </t>
