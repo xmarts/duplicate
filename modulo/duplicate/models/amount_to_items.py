@@ -37,11 +37,11 @@ class amount_to_text:
         strCantEntera = self.amount_to_text(nNumero)
         intCantDecimal = self.extraeDecimales(nNumero)
         if intCantDecimal <= 9:
-            strCantDecimal = "0%d" % (intCantDecimal)
+            strCantDecimal = "%d" % (intCantDecimal)
         else:
             strCantDecimal = "%d" % (intCantDecimal)
-        strCantDecimal += "/100"
-        return strCantEntera+' '+intermedio+' '+strCantDecimal+' '+sufijo
+        strCantDecimal += ""
+        return strCantEntera
 
     def extraeDecimales(self, nNumero, max_digits=2):
         """
@@ -49,7 +49,7 @@ class amount_to_text:
         @params max_digits : Maximum number of decimals to take
         """
         strDecimales = str(round(nNumero % 1, 2)).replace('0.', '')
-        strDecimales += "0"*max_digits
+        strDecimales += ""*max_digits
         strDecimales = strDecimales[0:max_digits]
         return int(strDecimales)
 
@@ -164,19 +164,19 @@ class amount_to_text:
         return cRes
 
 
-def get_amount_to_text(self, amount, currency=""):
+def get_amount_to(self, amount, currency=""):
     """
     @params amount : Amount for convert to text
     @params lang  : Language to used for the text converted
     @params currency : Name of currency used in amount
     """
-    if currency.upper() in ('MXP', 'MXN', 'PESOS', 'PESOS MEXICANOS'):
-        sufijo = 'M. N.'
-        currency = 'PESOS'
+    if currency.upper() in ('', '', '', ''):
+        sufijo = ''
+        currency = ''
     else:
-        sufijo = 'M. N.'
+        sufijo = ''
     # return amount_to_text(amount, lang, currency)
-    amount_text = amount_to_text().amount_to_text_cheque(amount, currency, sufijo)
+    amount_text = amount_to_text().amount_to_text_cheque(amount)
     amount_text = amount_text and amount_text.upper() or ''
     return amount_text
 

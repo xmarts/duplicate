@@ -374,7 +374,16 @@
   </template>
 
 
-
+  <record id="add_camp_hand_sale_order" model="ir.ui.view">
+      <field name="name">add_camp_sale_order</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='amount_untaxed']" position="before">
+          <field name="no_piezas" invisible="1"/>
+        </xpath>
+      </field>
+    </record>
   
 
 </odoo>
