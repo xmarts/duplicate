@@ -5,7 +5,8 @@
     <t t-name="PosTicket">
         <div class="pos-sale-ticket">
             
-            <div class="pos-center-align"><t t-esc="order.formatted_validation_date"/> <t t-esc="order.name"/></div>
+            <!-- <div class="pos-center-align">
+                <t t-esc="order.formatted_validation_date"/> <t t-esc="order.name"/></div>
             <br />
             <t t-esc="widget.pos.company.name"/><br />
             <div class="receipt-phone">
@@ -14,6 +15,26 @@
             <div class="receipt-user">
                 User: <t t-esc="widget.pos.get_cashier().name"/><br />
                 
+            </div> -->
+            <div class="pos-center-align">
+                
+                    <t t-if="widget.pos.config.direccion_ptv">
+                        <t t-esc="widget.pos.config.direccion_ptv"/><br/>
+                    </t>
+                    <t t-if="widget.pos.config.telefono_ptv">
+                        <span>TELÉFONO: </span><t t-esc="widget.pos.config.telefono_ptv"/><br/>
+                    </t>
+                    <br/> 
+                    <span>NOTA DE VENTA: </span><t t-esc="order.name"/>
+                    <br/>
+                    <span>Cajero: <t t-esc="widget.pos.get_cashier().name"/></span>
+                    <br/>
+                    <span><t t-esc="order.formatted_validation_date"/></span>
+                    <br/>
+                    <t t-if="order.get_client()">
+                    <span><t t-esc="order.get_client().ref"/> </span>
+                    <span><t t-esc="order.get_client().name"/> </span>
+                    </t>
             </div>
 
             <br />
@@ -25,10 +46,17 @@
             </t>
             <table class='receipt-orderlines'>
                 <colgroup>
-                    <col width='50%' />
-                    <col width='25%' />
-                    <col width='25%' />
+                    <col width='50%' name="Descripción"/>
+                    <col width='25%' name="Cantidad"/>
+                    <col width='25%' name="Total"/>
                 </colgroup>
+                 <thead>
+                    <th class="text-left">Descripción</th>
+                    <th class="text-left">Cantidad</th>
+                    <th class="pull-right">Total</th>
+                 </thead>
+
+                    <t t-set="titems" t-value="0" />
                 <tr t-foreach="orderlines" t-as="orderline">
                     <td>
                         <t t-esc="orderline.get_product().display_name"/>
@@ -44,7 +72,18 @@
                     <td class="pos-right-align">
                         <t t-esc="widget.format_currency(orderline.get_display_price())"/>
                     </td>
-                </tr>
+                        <t t-set="titems" t-value="titems + orderline.get_quantity()" />
+                    </tr>
+                    <tr>
+                        <td><br /></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Total Articulos:</td>
+                        <td class="pos-right-align"><t t-esc="titems"/></td>
+                        <td></td>
+                    </tr>
             </table>
             <br />
             <table class='receipt-total'>
@@ -96,9 +135,30 @@
                     <t t-esc="widget.format_currency(order.get_change())"/>
                     </td></tr>
             </table>
+           <!--  <br/>
+             <div style='text-align:center'>
+                    
+                  <t t-esc="widget.pos.amount_to_text"/>
+                </div> -->
+            <br/>
+             <div style='text-align:center'>
+                    <span>
+                        Para cambios es necesario su ticket de compra y empaque original. Recuerde que tiene 30 días para cambiar su mercancía. Artículos de oferta no se aceptan cambios ni devoluciones.
+                    </span>
+                  
+                </div>
+                 <br/>
+             <div style='text-align:center'>
+                    <span>
+                        Esta nota de Venta será incluida en la Factura Global
+                    </span>
+                  <br/>
+                    <!-- <span>( ARTICULOS)</span> -->
+                </div>
             <t t-if="receipt.footer">
                 <br />
                 <div style='text-align:center'>
+                    
                     <t t-esc="receipt.footer" />
                 </div>
             </t>
@@ -111,17 +171,26 @@
          <br/><br/>
          <div class="pos-sale-ticket">
              <p style = "page-break-after: always;"> </p> 
-            <div class="pos-center-align"><t t-esc="order.formatted_validation_date"/> <t t-esc="order.name"/></div>
-            <br />
-            <t t-esc="widget.pos.company.name"/><br />
-            <div class="receipt-phone">
-                Phone: <t t-esc="widget.pos.company.phone || ''"/><br />
-            </div>
-            <div class="receipt-user">
-                User: <t t-esc="widget.pos.get_cashier().name"/><br />
+             <div class="pos-center-align">
                 
+                    <t t-if="widget.pos.config.direccion_ptv">
+                        <t t-esc="widget.pos.config.direccion_ptv"/><br/>
+                    </t>
+                    <t t-if="widget.pos.config.telefono_ptv">
+                        <span>TELÉFONO: </span><t t-esc="widget.pos.config.telefono_ptv"/><br/>
+                    </t>
+                    <br/> 
+                    <span>NOTA DE VENTA: </span><t t-esc="order.name"/>
+                    <br/>
+                    <span>Cajero: <t t-esc="widget.pos.get_cashier().name"/></span>
+                    <br/>
+                    <span><t t-esc="order.formatted_validation_date"/></span>
+                    <br/>                    
+                    <t t-if="order.get_client()">
+                    <span><t t-esc="order.get_client().ref"/> </span>
+                    <span><t t-esc="order.get_client().name"/> </span>
+                    </t>
             </div>
-
             <br />
             <t t-if="receipt.header">
                 <div style='text-align:center'>
@@ -134,7 +203,13 @@
                     <col width='50%' />
                     <col width='25%' />
                     <col width='25%' />
-                </colgroup>
+                </colgroup>                
+                 <thead>
+                    <th class="text-left">Descripción</th>
+                    <th class="text-left">Cantidad</th>
+                    <th class="pull-right">Total</th>
+                 </thead>
+                    <t t-set="titems" t-value="0" />
                 <tr t-foreach="orderlines" t-as="orderline">
                     <td>
                         <t t-esc="orderline.get_product().display_name"/>
@@ -150,7 +225,18 @@
                     <td class="pos-right-align">
                         <t t-esc="widget.format_currency(orderline.get_display_price())"/>
                     </td>
-                </tr>
+                        <t t-set="titems" t-value="titems + orderline.get_quantity()" />
+                    </tr>
+                    <tr>
+                        <td><br /></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Total Articulos:</td>
+                        <td class="pos-right-align"><t t-esc="titems"/></td>
+                        <td></td>
+                    </tr>
             </table>
             <br />
             <table class='receipt-total'>
@@ -202,6 +288,23 @@
                     <t t-esc="widget.format_currency(order.get_change())"/>
                     </td></tr>
             </table>
+             <br/>
+             <div style='text-align:center'>
+                <span>*********** COPIA ***********</span><br/>
+                    <span>
+                        Para cambios es necesario su ticket de compra y empaque original. Recuerde que tiene 30 días para cambiar su mercancía. Artículos de oferta no se aceptan cambios ni devoluciones.
+                    </span>
+                  
+                </div>
+                 <br/>
+             <div style='text-align:center'>
+                    <span>
+                        Esta nota de Venta será incluida en la Factura Global
+                    </span><br/>
+                    <!-- <span>( ARTICULOS)</span><br/> -->
+                  
+                <span>*********** COPIA ***********</span>
+                </div>
             <t t-if="receipt.footer">
                 <br />
                 <div style='text-align:center'>
